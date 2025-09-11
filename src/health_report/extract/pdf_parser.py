@@ -2,14 +2,17 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Optional, Set
+import itertools
+import logging
 import re
 import pdfplumber
 
 from ..utils.io import read_json, write_json
-from ..utils.ocr import ocr_page
+from ..utils.ocr import ocr_page, DEFAULT_OCR_DPI, DEFAULT_OCR_LANGS
 
 
 EXTRACT_CACHE = "extracted.json"
+MIN_TEXT_LEN_FOR_OCR = 20
 
 
 def extract_from_reports(reports_dir: Path, data_dir: Path, cache: bool = True, ocr: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
@@ -20,9 +23,8 @@ def extract_from_reports(reports_dir: Path, data_dir: Path, cache: bool = True, 
             return cached
 
     results: List[Dict[str, Any]] = []
-    for pdf_path in sorted(reports_dir.rglob("*.pdf")):
-        results.extend(extract_from_pdf(pdf_path, ocr=ocr))
-    for pdf_path in sorted(reports_dir.rglob("*.PDF")):
+    pdf_files = [p for p in reports_dir.rglob("*") if p.is_file() and p.suffix.lower() == ".pdf"]
+    for pdf_path in sorted(pdf_files):
         results.extend(extract_from_pdf(pdf_path, ocr=ocr))
 
     if cache:
@@ -53,9 +55,10 @@ def extract_from_pdf(pdf_path: Path, ocr: Optional[Dict[str, Any]] = None) -> Li
                 # 2) Also parse raw text lines to catch non-table content
                 text = page.extract_text() or ""
                 # If OCR is enabled and text is very short, attempt OCR
-                if (not text or len(text) < 20) and ocr and ocr.get("enabled"):
-                    dpi = int(ocr.get("dpi", 200))
-                    langs = ocr.get("languages", "eng")
+                if (not text or len(text) < MIN_TEXT_LEN_FOR_OCR) and ocr and ocr.get("enabled"):
+                    dpi = int(ocr.get("dpi", DEFAULT_OCR_DPI))
+                    langs = ocr.get("languages", DEFAULT_OCR_LANGS)
+                    logging.debug("Attempting OCR for %s page %s (dpi=%s, langs=%s)", pdf_path.name, pi, dpi, langs)
                     text_ocr = ocr_page(pdf_path, pi, dpi=dpi, languages=langs)
                     if text_ocr:
                         text = text_ocr
