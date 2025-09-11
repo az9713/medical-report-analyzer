@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+  <h3>All Tests</h3>
+  <div class="tile">
+    <table>
+      <thead>
+        <tr>
+          <th>Test</th>
+          <th>Value</th>
+          <th>Status</th>
+          <th>Ref Range</th>
+          <th>Unit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for code, r in latest.items() %}
+          <tr>
+            <td>{{ r.test_name }}</td>
+            <td>{{ r.value }}</td>
+            <td class="{{ 'status-bad' if r.status=='high' else ('status-warn' if r.status=='low' else 'status-ok') }}">{{ r.emoji }}</td>
+            <td class="muted">{{ r.ref_low }} – {{ r.ref_high }}</td>
+            <td>{{ r.unit }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+

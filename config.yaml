@@ -1,0 +1,20 @@
+reports_dir: reports
+out_dir: build/health-report
+data_dir: data
+units_preference: auto  # auto | canonical | original
+privacy:
+  redact_identifiers: true
+  obfuscate_filenames: true
+  relative_dates: false
+ocr:
+  enabled: false
+parsing:
+  cache: true
+  parallel_workers: 4
+analytics:
+  rolling_window_days: 120
+  trend_min_points: 3
+  volatility_window: 5
+report:
+  title: "Health Report Dashboard"
+  favorites: ["A1C", "LDL_C", "EGFR", "TSH", "GLUCOSE"]

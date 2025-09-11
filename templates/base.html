@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="title">🏥 {{ title }}</div>
+      <nav><a href="index.html">Overview</a> · <a href="tests/index.html">All Tests</a></nav>
+    </header>
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="container muted">
+      Emoji legend: 🟢 in range · 🟠 low · 🔴 high · ↗ up · ↘ down · ↔ stable · Not medical advice.
+    </footer>
+    <script src="assets/app.js"></script>
+  </body>
+  </html>
+

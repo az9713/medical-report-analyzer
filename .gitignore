@@ -1,0 +1,24 @@
+venv/
+.venv*/
+.env
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+Thumbs.db
+build/
+dist/
+*.egg-info/
+node_modules/
+
+# Data and caches
+data/*.json
+data/cache/
+
+# Reports (privacy)
+reports/**/*.pdf
+reports/**/*.PDF
+
+# Editor
+.vscode/
+.idea/

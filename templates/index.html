@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="filters">
+    <div class="muted">Alerts: {% set counts = {'high':0,'low':0,'in':0} %}
+      {% for r in latest.values() %}
+        {% if r.status == 'high' %}{% set _ = counts.update({'high': counts['high'] + 1}) %}{% endif %}
+        {% if r.status == 'low' %}{% set _ = counts.update({'low': counts['low'] + 1}) %}{% endif %}
+        {% if r.status == 'in_range' %}{% set _ = counts.update({'in': counts['in'] + 1}) %}{% endif %}
+      {% endfor %}
+      🔴 {{ counts.high }} high · 🟠 {{ counts.low }} low · 🟢 {{ counts.in }} in range
+    </div>
+  </section>
+
+  <h3>Favorites</h3>
+  <div class="tile-grid">
+    {% for code in favorites %}
+      {% set r = latest.get(code) %}
+      <div class="tile">
+        <div class="label">{{ code }}</div>
+        {% if r %}
+          <div class="value {{ 'status-bad' if r.status=='high' else ('status-warn' if r.status=='low' else 'status-ok') }}">
+            {{ r.value }} {{ r.unit }} {{ r.emoji }}
+          </div>
+          <div class="muted">{{ r.test_name }} · {{ '↗' if r.trend=='up' else ('↘' if r.trend=='down' else '↔') }}</div>
+        {% else %}
+          <div class="muted">No data</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <h3 style="margin-top:20px;">Categories</h3>
+  <div class="grid">
+    {% for cat, items in categories.items() %}
+      <div class="tile">
+        <div class="label">{{ cat|title }}</div>
+        <ul>
+          {% for r in items[:5] %}
+            <li><span class="{{ 'status-bad' if r.status=='high' else ('status-warn' if r.status=='low' else 'status-ok') }}">{{ r.emoji }}</span>
+              {{ r.test_name }}: {{ r.value }} {{ r.unit }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+
+  <h3 style="margin-top:20px;">All Metrics</h3>
+  <div class="tile">
+    <table>
+      <thead>
+        <tr>
+          <th>Test</th>
+          <th>Value</th>
+          <th>Status</th>
+          <th>Range</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for code, r in latest.items() %}
+          <tr>
+            <td>{{ r.test_name }}</td>
+            <td>{{ r.value }} {{ r.unit }}</td>
+            <td class="{{ 'status-bad' if r.status=='high' else ('status-warn' if r.status=='low' else 'status-ok') }}">{{ r.emoji }}</td>
+            <td class="muted">{{ r.ref_low }} – {{ r.ref_high }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+
