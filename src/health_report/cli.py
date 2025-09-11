@@ -33,7 +33,12 @@ def main():
     data_dir = Path(cfg["data_dir"]).resolve()
     ensure_dirs([out_dir, data_dir])
 
-    extracted = extract_from_reports(reports_dir, data_dir, cache=cfg.get("parsing", {}).get("cache", True))
+    extracted = extract_from_reports(
+        reports_dir,
+        data_dir,
+        cache=cfg.get("parsing", {}).get("cache", True),
+        ocr=cfg.get("ocr", {}),
+    )
     normalized = normalize_measurements(extracted, data_dir, units_preference=cfg.get("units_preference", "auto"))
     trends = compute_trends(normalized, rolling_window_days=cfg.get("analytics", {}).get("rolling_window_days", 120))
     scored = compute_scores(trends)
@@ -50,4 +55,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
