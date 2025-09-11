@@ -2,26 +2,83 @@
 
 A local, offline tool that reads medical lab report PDFs from `reports/`, extracts measurements, analyzes trends and risk, and generates an interactive multi‑page HTML report in `build/health-report/`.
 
-## Quickstart
+## Highlights
+- Line‑based extraction tailored for Quest Diagnostics reports ("Reference Range:" lines).
+- Detects per‑measurement units and normalizes to canonical units when possible.
+- Computes simple trends and risk status; renders a clean dashboard.
+- All processing is local; PDFs and build outputs are ignored by Git for privacy.
 
-1. Ensure Python 3.10+
-2. Install dependencies:
-   - `python -m venv venv && venv/Scripts/activate` (Windows)
-   - `pip install -r requirements.txt`
-3. Run:
-   - `python -m src.health_report.cli --reports-dir ./reports --out-dir ./build/health-report`
+## Prerequisites
+- Python 3.12 (recommended). Other versions may work, but scientific wheels are best supported on 3.12.
 
-## Features
-- Parses all PDFs in `reports/` (text-based)
-- Detects per-measurement units from table headers, value suffixes, or names
-- Normalizes tests to canonical codes and units
-- Computes trends and risk scores
-- Generates interactive HTML report (overview, categories, tests)
+## Setup (Windows)
+```
+py -3.12 -m venv .venv312
+.venv312\Scripts\activate
+pip install -r requirements.txt
+```
 
-## Notes
-- No OCR is enabled by default (your PDFs are text-based)
-- Raw PDFs are ignored by Git via `.gitignore`
-- Outputs and caches are in `data/` and `build/`
+## Run
+Use config defaults from `config.yaml`:
+```
+python -m src.health_report.cli
+```
+
+Or specify paths explicitly:
+```
+python -m src.health_report.cli \
+  --reports-dir ./reports \
+  --out-dir ./build/health-report \
+  --data-dir ./data \
+  --units auto   # auto | canonical | original
+```
+
+Outputs:
+- Site: `build/health-report/index.html` (+ `tests/index.html`).
+- Caches: `data/extracted.json`, `data/normalized.json`.
+
+## Configuration
+Edit `config.yaml` to change defaults:
+- `reports_dir`: Directory with your PDFs (kept local and ignored by Git).
+- `out_dir`: Output directory for the generated site.
+- `data_dir`: Cache directory (extraction/normalization JSON).
+- `units_preference`: `auto` | `canonical` | `original`.
+- `parsing.cache`: Reuse previous extraction results when available.
+- `analytics.*`: Simple trend and volatility settings.
+- `report.title`, `report.favorites`: Dashboard options.
+
+Notes:
+- OCR: Not enabled/implemented; PDFs must be text‑based (selectable text). Scanned images will not extract values.
+
+## Supported PDF Format
+- Optimized for Quest Diagnostics reports where result lines look like:
+  - `GLUCOSE 89 Reference Range: 65-99 mg/dL`
+  - `HEMOGLOBIN A1c 5.9 H Reference Range: <5.7 % of total Hgb`
+- The extractor parses name, numeric value, optional flag (H/L), reference range, and units.
+- Qualitative findings (e.g., `COLOR YELLOW Reference Range: YELLOW`) are recorded without numeric values.
+
+## Privacy & Git Hygiene
+- Your personal data stays local:
+  - `reports/**/*.pdf` and `build/` outputs are ignored by Git via `.gitignore`.
+  - Only `reports/.gitkeep` is tracked so the folder exists empty in the repo.
+- Do not place sensitive data outside `reports/` or `build/` if you intend to push the repo.
+
+## Troubleshooting
+- Dashboard shows "No data":
+  - Ensure your PDFs contain selectable text (not scanned images).
+  - Verify lines include "Reference Range:"; other vendor formats may require tuning.
+  - Clear caches and re‑run:
+    - Windows: `del data\extracted.json data\normalized.json`
+    - Then rerun the CLI.
+- Units look odd:
+  - The extractor avoids non‑unit words (e.g., "Desirable"). If something slips through, open an issue or adjust `_unit_from_tokens` in `src/health_report/extract/pdf_parser.py`.
+- Scoring seems generic:
+  - Extend `data/metrics_catalog.json` with additional tests and ranges so more items classify as in‑range/high/low.
+
+## Development
+- Extraction logic: `src/health_report/extract/pdf_parser.py`
+- Normalization: `src/health_report/normalize/normalize.py`, `data/metrics_catalog.json`
+- Report rendering: `src/health_report/report/generator.py`, templates under `templates/`
 
 ## Disclaimer
 This tool provides information only and is not medical advice.
