@@ -30,6 +30,36 @@
       "ref_range": {"low": 0, "high": 100},
       "emoji": "🧪"
     },
+    "NON_HDL_C": {
+      "name": "Non-HDL Cholesterol",
+      "synonyms": ["Non HDL Cholesterol", "Non-HDL", "NON HDL"],
+      "category": "lipids",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "mmol/L"],
+      "conversions": {"mmol/L->mg/dL": 38.67, "mg/dL->mmol/L": 0.0259},
+      "ref_range": {"low": 0, "high": 130},
+      "emoji": "🧪"
+    },
+    "CHOL_HDL_RATIO": {
+      "name": "Chol/HDL Ratio",
+      "synonyms": ["CHOL/HDLC RATIO", "Cholesterol/HDL Ratio", "Chol/HDL"],
+      "category": "lipids",
+      "unit_canonical": "",
+      "unit_aliases": [""],
+      "conversions": {},
+      "ref_range": {"low": 0, "high": 5.0},
+      "emoji": "🧪"
+    },
+    "LDL_HDL_RATIO": {
+      "name": "LDL/HDL Ratio",
+      "synonyms": ["LDL/HDL RATIO", "LDL to HDL Ratio"],
+      "category": "lipids",
+      "unit_canonical": "",
+      "unit_aliases": [""],
+      "conversions": {},
+      "ref_range": {"low": 0, "high": 3.0},
+      "emoji": "🧪"
+    },
     "HDL_C": {
       "name": "HDL Cholesterol",
       "synonyms": ["HDL", "HDL-C"],
@@ -59,6 +89,156 @@
       "conversions": {},
       "ref_range": {"low": 60, "high": 999},
       "emoji": "🩸"
+    },
+    "BUN": {
+      "name": "Urea Nitrogen (BUN)",
+      "synonyms": ["UREA NITROGEN (BUN)", "BUN", "Urea Nitrogen"],
+      "category": "renal",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "mmol/L"],
+      "conversions": {"mg/dL->mmol/L": 0.357, "mmol/L->mg/dL": 2.8},
+      "ref_range": {"low": 7, "high": 25},
+      "emoji": "🩸"
+    },
+    "CREATININE": {
+      "name": "Creatinine",
+      "synonyms": ["CREATININE"],
+      "category": "renal",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "umol/L", "µmol/L"],
+      "conversions": {"mg/dL->umol/L": 88.4, "umol/L->mg/dL": 0.01131},
+      "ref_range": {"low": 0.70, "high": 1.33},
+      "emoji": "🩸"
+    },
+    "SODIUM": {
+      "name": "Sodium",
+      "synonyms": ["SODIUM"],
+      "category": "metabolic",
+      "unit_canonical": "mmol/L",
+      "unit_aliases": ["mmol/L", "mEq/L"],
+      "conversions": {"mEq/L->mmol/L": 1.0, "mmol/L->mEq/L": 1.0},
+      "ref_range": {"low": 135, "high": 146},
+      "emoji": "🧪"
+    },
+    "POTASSIUM": {
+      "name": "Potassium",
+      "synonyms": ["POTASSIUM"],
+      "category": "metabolic",
+      "unit_canonical": "mmol/L",
+      "unit_aliases": ["mmol/L", "mEq/L"],
+      "conversions": {"mEq/L->mmol/L": 1.0, "mmol/L->mEq/L": 1.0},
+      "ref_range": {"low": 3.5, "high": 5.3},
+      "emoji": "🧪"
+    },
+    "CHLORIDE": {
+      "name": "Chloride",
+      "synonyms": ["CHLORIDE"],
+      "category": "metabolic",
+      "unit_canonical": "mmol/L",
+      "unit_aliases": ["mmol/L", "mEq/L"],
+      "conversions": {"mEq/L->mmol/L": 1.0, "mmol/L->mEq/L": 1.0},
+      "ref_range": {"low": 98, "high": 110},
+      "emoji": "🧪"
+    },
+    "CARBON_DIOXIDE": {
+      "name": "Carbon Dioxide",
+      "synonyms": ["CARBON DIOXIDE", "CO2", "Bicarbonate"],
+      "category": "metabolic",
+      "unit_canonical": "mmol/L",
+      "unit_aliases": ["mmol/L", "mEq/L"],
+      "conversions": {"mEq/L->mmol/L": 1.0, "mmol/L->mEq/L": 1.0},
+      "ref_range": {"low": 20, "high": 32},
+      "emoji": "🧪"
+    },
+    "CALCIUM": {
+      "name": "Calcium",
+      "synonyms": ["CALCIUM"],
+      "category": "metabolic",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "mmol/L"],
+      "conversions": {"mg/dL->mmol/L": 0.25, "mmol/L->mg/dL": 4.0},
+      "ref_range": {"low": 8.6, "high": 10.3},
+      "emoji": "🧪"
+    },
+    "PROTEIN_TOTAL": {
+      "name": "Protein, Total",
+      "synonyms": ["PROTEIN, TOTAL", "Total Protein"],
+      "category": "hepatic",
+      "unit_canonical": "g/dL",
+      "unit_aliases": ["g/dL", "g/L"],
+      "conversions": {"g/dL->g/L": 10.0, "g/L->g/dL": 0.1},
+      "ref_range": {"low": 6.1, "high": 8.1},
+      "emoji": "🧪"
+    },
+    "ALBUMIN": {
+      "name": "Albumin",
+      "synonyms": ["ALBUMIN"],
+      "category": "hepatic",
+      "unit_canonical": "g/dL",
+      "unit_aliases": ["g/dL", "g/L"],
+      "conversions": {"g/dL->g/L": 10.0, "g/L->g/dL": 0.1},
+      "ref_range": {"low": 3.6, "high": 5.1},
+      "emoji": "🧪"
+    },
+    "GLOBULIN": {
+      "name": "Globulin",
+      "synonyms": ["GLOBULIN"],
+      "category": "hepatic",
+      "unit_canonical": "g/dL",
+      "unit_aliases": ["g/dL", "g/L"],
+      "conversions": {"g/dL->g/L": 10.0, "g/L->g/dL": 0.1},
+      "ref_range": {"low": 1.9, "high": 3.7},
+      "emoji": "🧪"
+    },
+    "A_G_RATIO": {
+      "name": "Albumin/Globulin Ratio",
+      "synonyms": ["ALBUMIN/GLOBULIN RATIO", "A/G Ratio"],
+      "category": "hepatic",
+      "unit_canonical": "",
+      "unit_aliases": [],
+      "conversions": {},
+      "ref_range": {"low": 1.0, "high": 2.5},
+      "emoji": "🧪"
+    },
+    "BILIRUBIN_TOTAL": {
+      "name": "Bilirubin, Total",
+      "synonyms": ["BILIRUBIN, TOTAL", "Total Bilirubin"],
+      "category": "hepatic",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "umol/L", "µmol/L"],
+      "conversions": {"mg/dL->umol/L": 17.1, "umol/L->mg/dL": 0.0585},
+      "ref_range": {"low": 0.2, "high": 1.2},
+      "emoji": "🧪"
+    },
+    "BILIRUBIN_DIRECT": {
+      "name": "Bilirubin, Direct",
+      "synonyms": ["BILIRUBIN, DIRECT", "Direct Bilirubin"],
+      "category": "hepatic",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "umol/L", "µmol/L"],
+      "conversions": {"mg/dL->umol/L": 17.1, "umol/L->mg/dL": 0.0585},
+      "ref_range": {"low": 0.0, "high": 0.2},
+      "emoji": "🧪"
+    },
+    "BILIRUBIN_INDIRECT": {
+      "name": "Bilirubin, Indirect",
+      "synonyms": ["BILIRUBIN, INDIRECT", "Indirect Bilirubin"],
+      "category": "hepatic",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "umol/L", "µmol/L"],
+      "conversions": {"mg/dL->umol/L": 17.1, "umol/L->mg/dL": 0.0585},
+      "ref_range": {"low": 0.2, "high": 1.2},
+      "emoji": "🧪"
+    },
+    "ALKALINE_PHOSPHATASE": {
+      "name": "Alkaline Phosphatase",
+      "synonyms": ["ALKALINE PHOSPHATASE", "ALP"],
+      "category": "hepatic",
+      "unit_canonical": "U/L",
+      "unit_aliases": ["U/L"],
+      "conversions": {},
+      "ref_range": {"low": 35, "high": 144},
+      "emoji": "🧪"
     },
     "TSH": {
       "name": "TSH",
