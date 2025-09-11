@@ -12,7 +12,9 @@ dist/
 node_modules/
 
 # Data and caches
+# keep caches ignored but allow tracking the catalog
 data/*.json
+!data/metrics_catalog.json
 data/cache/
 
 # Reports (privacy)

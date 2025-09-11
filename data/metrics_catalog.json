@@ -1,0 +1,124 @@
+{
+  "tests": {
+    "A1C": {
+      "name": "Hemoglobin A1c",
+      "synonyms": ["HbA1c", "A1C"],
+      "category": "metabolic",
+      "unit_canonical": "%",
+      "unit_aliases": ["%"],
+      "conversions": {},
+      "ref_range": {"low": 4.0, "high": 5.6},
+      "emoji": "🍭"
+    },
+    "GLUCOSE": {
+      "name": "Glucose",
+      "synonyms": ["Glucose", "Glucose (Fasting)", "FPG"],
+      "category": "metabolic",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "mgdl", "mmol/L"],
+      "conversions": {"mmol/L->mg/dL": 18.0, "mg/dL->mmol/L": 0.0555},
+      "ref_range": {"low": 70, "high": 99},
+      "emoji": "🍞"
+    },
+    "LDL_C": {
+      "name": "LDL Cholesterol",
+      "synonyms": ["LDL-C", "LDL Cholesterol", "LDL"],
+      "category": "lipids",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "mmol/L"],
+      "conversions": {"mmol/L->mg/dL": 38.67, "mg/dL->mmol/L": 0.0259},
+      "ref_range": {"low": 0, "high": 100},
+      "emoji": "🧪"
+    },
+    "HDL_C": {
+      "name": "HDL Cholesterol",
+      "synonyms": ["HDL", "HDL-C"],
+      "category": "lipids",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "mmol/L"],
+      "conversions": {"mmol/L->mg/dL": 38.67, "mg/dL->mmol/L": 0.0259},
+      "ref_range": {"low": 40, "high": 200},
+      "emoji": "🧪"
+    },
+    "TRIG": {
+      "name": "Triglycerides",
+      "synonyms": ["Triglycerides", "Trig"],
+      "category": "lipids",
+      "unit_canonical": "mg/dL",
+      "unit_aliases": ["mg/dL", "mmol/L"],
+      "conversions": {"mmol/L->mg/dL": 88.57, "mg/dL->mmol/L": 0.0113},
+      "ref_range": {"low": 0, "high": 150},
+      "emoji": "🧫"
+    },
+    "EGFR": {
+      "name": "eGFR",
+      "synonyms": ["eGFR", "GFR"],
+      "category": "renal",
+      "unit_canonical": "mL/min/1.73m2",
+      "unit_aliases": ["mL/min/1.73m2", "mL/min/1.73 m2", "ml/min/1.73m2"],
+      "conversions": {},
+      "ref_range": {"low": 60, "high": 999},
+      "emoji": "🩸"
+    },
+    "TSH": {
+      "name": "TSH",
+      "synonyms": ["TSH", "Thyroid Stimulating Hormone"],
+      "category": "thyroid",
+      "unit_canonical": "mIU/L",
+      "unit_aliases": ["mIU/L", "uIU/mL"],
+      "conversions": {"uIU/mL->mIU/L": 1.0, "mIU/L->uIU/mL": 1.0},
+      "ref_range": {"low": 0.4, "high": 4.5},
+      "emoji": "🦋"
+    },
+    "ALT": {
+      "name": "ALT",
+      "synonyms": ["ALT", "Alanine Aminotransferase"],
+      "category": "hepatic",
+      "unit_canonical": "U/L",
+      "unit_aliases": ["U/L"],
+      "conversions": {},
+      "ref_range": {"low": 0, "high": 40},
+      "emoji": "🫀"
+    },
+    "AST": {
+      "name": "AST",
+      "synonyms": ["AST", "Aspartate Aminotransferase"],
+      "category": "hepatic",
+      "unit_canonical": "U/L",
+      "unit_aliases": ["U/L"],
+      "conversions": {},
+      "ref_range": {"low": 0, "high": 40},
+      "emoji": "🫀"
+    },
+    "CRP": {
+      "name": "C-Reactive Protein",
+      "synonyms": ["CRP", "hs-CRP", "C Reactive Protein"],
+      "category": "inflammation",
+      "unit_canonical": "mg/L",
+      "unit_aliases": ["mg/L"],
+      "conversions": {},
+      "ref_range": {"low": 0, "high": 3},
+      "emoji": "🫁"
+    },
+    "PSA": {
+      "name": "Prostate-Specific Antigen",
+      "synonyms": ["PSA", "Prostate Specific Antigen", "Prostate-Specific Antigen", "PSA Total"],
+      "category": "urology",
+      "unit_canonical": "ng/mL",
+      "unit_aliases": ["ng/mL", "ngml"],
+      "conversions": {},
+      "ref_range": {"low": 0.0, "high": 4.0},
+      "emoji": "🧬"
+    }
+  },
+  "categories": {
+    "metabolic": {"name": "Metabolic"},
+    "lipids": {"name": "Lipids"},
+    "renal": {"name": "Renal"},
+    "hepatic": {"name": "Hepatic"},
+    "hematology": {"name": "Hematology"},
+    "thyroid": {"name": "Thyroid"},
+    "inflammation": {"name": "Inflammation"},
+    "urology": {"name": "Urology"}
+  }
+}
