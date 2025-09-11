@@ -6,12 +6,13 @@ import re
 import pdfplumber
 
 from ..utils.io import read_json, write_json
+from ..utils.ocr import ocr_page
 
 
 EXTRACT_CACHE = "extracted.json"
 
 
-def extract_from_reports(reports_dir: Path, data_dir: Path, cache: bool = True) -> List[Dict[str, Any]]:
+def extract_from_reports(reports_dir: Path, data_dir: Path, cache: bool = True, ocr: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
     cache_path = data_dir / EXTRACT_CACHE
     if cache and cache_path.exists():
         cached = read_json(cache_path, default=[])
@@ -20,21 +21,21 @@ def extract_from_reports(reports_dir: Path, data_dir: Path, cache: bool = True) 
 
     results: List[Dict[str, Any]] = []
     for pdf_path in sorted(reports_dir.rglob("*.pdf")):
-        results.extend(extract_from_pdf(pdf_path))
+        results.extend(extract_from_pdf(pdf_path, ocr=ocr))
     for pdf_path in sorted(reports_dir.rglob("*.PDF")):
-        results.extend(extract_from_pdf(pdf_path))
+        results.extend(extract_from_pdf(pdf_path, ocr=ocr))
 
     if cache:
         write_json(cache_path, results)
     return results
 
 
-def extract_from_pdf(pdf_path: Path) -> List[Dict[str, Any]]:
+def extract_from_pdf(pdf_path: Path, ocr: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
     seen: Set[Tuple[str, str, str]] = set()  # (file, name_lower, value_raw)
     try:
         with pdfplumber.open(pdf_path) as pdf:
-            for page in pdf.pages:
+            for pi, page in enumerate(pdf.pages):
                 # 1) Parse any table-like blocks by treating cells as text lines
                 tables = page.extract_tables() or []
                 for tbl in tables:
@@ -51,6 +52,13 @@ def extract_from_pdf(pdf_path: Path) -> List[Dict[str, Any]]:
 
                 # 2) Also parse raw text lines to catch non-table content
                 text = page.extract_text() or ""
+                # If OCR is enabled and text is very short, attempt OCR
+                if (not text or len(text) < 20) and ocr and ocr.get("enabled"):
+                    dpi = int(ocr.get("dpi", 200))
+                    langs = ocr.get("languages", "eng")
+                    text_ocr = ocr_page(pdf_path, pi, dpi=dpi, languages=langs)
+                    if text_ocr:
+                        text = text_ocr
                 for rec in _parse_result_lines([ln.strip() for ln in text.splitlines() if ln.strip()], pdf_path):
                     key = (rec["file"], rec["test_name"].lower(), rec.get("value_raw", ""))
                     if key not in seen:
