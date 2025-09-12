@@ -5,7 +5,7 @@ A local, offline tool that reads medical lab report PDFs from `reports/`, extrac
 ## Highlights
 - Line‑based extraction tailored for Quest Diagnostics reports ("Reference Range:" lines).
 - Detects per‑measurement units and normalizes to canonical units when possible.
-- Computes simple trends and risk status; renders a clean dashboard.
+- Captures measurement dates and computes time-aware trends and risk status; renders a clean dashboard.
 - All processing is local; PDFs and build outputs are ignored by Git for privacy.
 
 ## Prerequisites
@@ -44,7 +44,7 @@ Edit `config.yaml` to change defaults:
 - `data_dir`: Cache directory (extraction/normalization JSON).
 - `units_preference`: `auto` | `canonical` | `original`.
 - `parsing.cache`: Reuse previous extraction results when available.
-- `analytics.*`: Simple trend and volatility settings.
+- `analytics.*`: Trend and volatility settings, including rolling window, minimum points, and volatility window.
 - `report.title`, `report.favorites`: Dashboard options.
 
 ### OCR

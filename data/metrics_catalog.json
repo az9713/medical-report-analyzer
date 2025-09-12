@@ -45,7 +45,7 @@
       "synonyms": ["CHOL/HDLC RATIO", "Cholesterol/HDL Ratio", "Chol/HDL"],
       "category": "lipids",
       "unit_canonical": "",
-      "unit_aliases": [""],
+      "unit_aliases": [],
       "conversions": {},
       "ref_range": {"low": 0, "high": 5.0},
       "emoji": "🧪"
@@ -55,7 +55,7 @@
       "synonyms": ["LDL/HDL RATIO", "LDL to HDL Ratio"],
       "category": "lipids",
       "unit_canonical": "",
-      "unit_aliases": [""],
+      "unit_aliases": [],
       "conversions": {},
       "ref_range": {"low": 0, "high": 3.0},
       "emoji": "🧪"

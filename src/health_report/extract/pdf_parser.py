@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Tuple, Optional, Set
 import itertools
 import logging
 import re
+from datetime import datetime
 import pdfplumber
 
 from ..utils.io import read_json, write_json
@@ -12,6 +13,9 @@ from ..utils.ocr import ocr_page, DEFAULT_OCR_DPI, DEFAULT_OCR_LANGS
 
 
 EXTRACT_CACHE = "extracted.json"
+
+# Regex to detect dates like 2023-01-30 or 01/30/2023
+DATE_RE = re.compile(r"(\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{2,4})")
 
 
 def extract_from_reports(reports_dir: Path, data_dir: Path, cache: bool = True, ocr: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
@@ -35,23 +39,10 @@ def extract_from_pdf(pdf_path: Path, ocr: Optional[Dict[str, Any]] = None) -> Li
     rows: List[Dict[str, Any]] = []
     seen: Set[Tuple[str, str, str]] = set()  # (file, name_lower, value_raw)
     try:
+        fallback_date = datetime.fromtimestamp(pdf_path.stat().st_mtime).date().isoformat()
         with pdfplumber.open(pdf_path) as pdf:
+            report_date: Optional[str] = None
             for pi, page in enumerate(pdf.pages):
-                # 1) Parse any table-like blocks by treating cells as text lines
-                tables = page.extract_tables() or []
-                for tbl in tables:
-                    for raw_row in tbl:
-                        for cell in raw_row:
-                            line = (cell or "").strip()
-                            if not line:
-                                continue
-                            for rec in _parse_result_lines([line], pdf_path):
-                                key = (rec["file"], rec["test_name"].lower(), rec.get("value_raw", ""))
-                                if key not in seen:
-                                    rows.append(rec)
-                                    seen.add(key)
-
-                # 2) Also parse raw text lines to catch non-table content
                 text = page.extract_text() or ""
                 if ocr and ocr.get("enabled"):
                     mode = str(ocr.get("mode", "auto")).lower()
@@ -76,7 +67,29 @@ def extract_from_pdf(pdf_path: Path, ocr: Optional[Dict[str, Any]] = None) -> Li
                         )
                         if text_ocr:
                             text = f"{text}\n{text_ocr}".strip()
-                for rec in _parse_result_lines([ln.strip() for ln in text.splitlines() if ln.strip()], pdf_path):
+                if not report_date:
+                    report_date = _find_first_date(text)
+
+                # 1) Parse any table-like blocks by treating cells as text lines
+                tables = page.extract_tables() or []
+                for tbl in tables:
+                    for raw_row in tbl:
+                        for cell in raw_row:
+                            line = (cell or "").strip()
+                            if not line:
+                                continue
+                            for rec in _parse_result_lines([line], pdf_path, default_date=report_date or fallback_date):
+                                key = (rec["file"], rec["test_name"].lower(), rec.get("value_raw", ""))
+                                if key not in seen:
+                                    rows.append(rec)
+                                    seen.add(key)
+
+                # 2) Also parse raw text lines to catch non-table content
+                for rec in _parse_result_lines(
+                    [ln.strip() for ln in text.splitlines() if ln.strip()],
+                    pdf_path,
+                    default_date=report_date or fallback_date,
+                ):
                     key = (rec["file"], rec["test_name"].lower(), rec.get("value_raw", ""))
                     if key not in seen:
                         rows.append(rec)
@@ -89,7 +102,7 @@ def extract_from_pdf(pdf_path: Path, ocr: Optional[Dict[str, Any]] = None) -> Li
     return rows
 
 
-def _parse_result_lines(lines: List[str], pdf_path: Path) -> List[Dict[str, Any]]:
+def _parse_result_lines(lines: List[str], pdf_path: Path, default_date: Optional[str] = None) -> List[Dict[str, Any]]:
     """Parse Quest-style result lines such as:
     - "GLUCOSE 81 Reference Range: 65-99 mg/dL"
     - "HEMOGLOBIN A1c 5.9 H Reference Range: <5.7 % of total Hgb"
@@ -143,6 +156,7 @@ def _parse_result_lines(lines: List[str], pdf_path: Path) -> List[Dict[str, Any]
                 "value_numeric": _extract_numeric(value_raw),
                 "unit_raw": unit_guess or "",
                 "ref_range_raw": f"{rng} {unit_token}".strip(),
+                "measured_at": _find_first_date(ln) or default_date,
             })
             continue
 
@@ -160,6 +174,7 @@ def _parse_result_lines(lines: List[str], pdf_path: Path) -> List[Dict[str, Any]
                 "value_numeric": _extract_numeric(value_raw),
                 "unit_raw": unit_guess or "",
                 "ref_range_raw": "",
+                "measured_at": _find_first_date(ln) or default_date,
             })
             continue
 
@@ -175,6 +190,7 @@ def _parse_result_lines(lines: List[str], pdf_path: Path) -> List[Dict[str, Any]
                 "value_numeric": None,
                 "unit_raw": "",
                 "ref_range_raw": ref,
+                "measured_at": _find_first_date(ln) or default_date,
             })
 
     return out
@@ -253,4 +269,22 @@ def _extract_numeric(s: str) -> float | None:
             return float(m.group(0))
         except Exception:
             return None
+    return None
+
+
+def _find_first_date(text: str) -> Optional[str]:
+    """Return the first date found in ``text`` normalized to ISO format."""
+    m = DATE_RE.search(text)
+    if not m:
+        return None
+    return _parse_date_token(m.group(0))
+
+
+def _parse_date_token(token: str) -> Optional[str]:
+    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"):
+        try:
+            dt = datetime.strptime(token, fmt)
+            return dt.date().isoformat()
+        except ValueError:
+            continue
     return None

@@ -52,7 +52,12 @@ def main():
         ocr=cfg.get("ocr", {}),
     )
     normalized = normalize_measurements(extracted, data_dir, units_preference=cfg.get("units_preference", "auto"))
-    trends = compute_trends(normalized, rolling_window_days=cfg.get("analytics", {}).get("rolling_window_days", 120))
+    trends = compute_trends(
+        normalized,
+        rolling_window_days=cfg.get("analytics", {}).get("rolling_window_days", 120),
+        trend_min_points=cfg.get("analytics", {}).get("trend_min_points", 3),
+        volatility_window=cfg.get("analytics", {}).get("volatility_window", 5),
+    )
     scored = compute_scores(trends)
 
     generate_report(
