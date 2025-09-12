@@ -66,6 +66,7 @@ def normalize_measurements(extracted: List[Dict[str, Any]], data_dir: Path, unit
             "unit_raw": row.get("unit_raw"),
             "ref_low": (tdef.get("ref_range") or {}).get("low"),
             "ref_high": (tdef.get("ref_range") or {}).get("high"),
+            "measured_at": row.get("measured_at"),
         })
 
     write_json(data_dir / NORMALIZED_CACHE, normalized)

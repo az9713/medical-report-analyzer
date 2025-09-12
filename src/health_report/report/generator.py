@@ -22,7 +22,14 @@ def generate_report(*, normalized: List[Dict[str, Any]], trends: List[Dict[str, 
     latest_by_code: Dict[str, Dict[str, Any]] = {}
     for r in scored:
         code = r["test_code"]
-        latest_by_code[code] = r  # naive last-wins; improve with dates when available
+        existing = latest_by_code.get(code)
+        if not existing:
+            latest_by_code[code] = r
+            continue
+        r_dt = r.get("measured_at")
+        e_dt = existing.get("measured_at")
+        if r_dt and (not e_dt or r_dt > e_dt):
+            latest_by_code[code] = r
 
     # Group by category
     by_category: Dict[str, List[Dict[str, Any]]] = defaultdict(list)

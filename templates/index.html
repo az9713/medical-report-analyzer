@@ -21,7 +21,9 @@
           <div class="value {{ 'status-bad' if r.status=='high' else ('status-warn' if r.status=='low' else 'status-ok') }}">
             {{ r.value }} {{ r.unit }} {{ r.emoji }}
           </div>
-          <div class="muted">{{ r.test_name }} · {{ '↗' if r.trend=='up' else ('↘' if r.trend=='down' else '↔') }}</div>
+          <div class="muted">
+            {{ r.test_name }} · {{ '↗' if r.trend=='up' else ('↘' if r.trend=='down' else '↔') }} {{ r.slope|round(2) }}
+          </div>
         {% else %}
           <div class="muted">No data</div>
         {% endif %}
