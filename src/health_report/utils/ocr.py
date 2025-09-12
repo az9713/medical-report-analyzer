@@ -15,6 +15,7 @@ def ocr_page(
     *,
     dpi: int = DEFAULT_OCR_DPI,
     languages: str = DEFAULT_OCR_LANGS,
+    tesseract_cmd: Optional[str] = None,
 ) -> str:
     """Render a single PDF page to an image and run Tesseract OCR.
 
@@ -24,6 +25,8 @@ def ocr_page(
     try:
         import pypdfium2 as pdfium  # type: ignore
         import pytesseract  # type: ignore
+        if tesseract_cmd:
+            pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
     except ImportError as e:
         logging.debug("OCR dependencies not available: %s", e)
         return ""

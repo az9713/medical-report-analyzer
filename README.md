@@ -47,8 +47,20 @@ Edit `config.yaml` to change defaults:
 - `analytics.*`: Simple trend and volatility settings.
 - `report.title`, `report.favorites`: Dashboard options.
 
-Notes:
-- OCR: Not enabled/implemented; PDFs must be text‑based (selectable text). Scanned images will not extract values.
+### OCR
+The extractor can fall back to Tesseract OCR for scanned PDFs. Ensure the
+system `tesseract-ocr` binary is installed. Configure in `config.yaml`:
+
+```
+ocr:
+  enabled: false
+  mode: auto       # auto | always | never
+  dpi: 200
+  languages: eng   # comma-separated Tesseract language codes
+```
+
+OCR settings can also be overridden via CLI flags such as
+`--enable-ocr`, `--ocr-mode`, `--ocr-dpi`, and `--ocr-langs`.
 
 ## Supported PDF Format
 - Optimized for Quest Diagnostics reports where result lines look like:
@@ -65,7 +77,7 @@ Notes:
 
 ## Troubleshooting
 - Dashboard shows "No data":
-  - Ensure your PDFs contain selectable text (not scanned images).
+  - If pages are scanned images, enable OCR via `--enable-ocr` or the `ocr` section in `config.yaml`.
   - Verify lines include "Reference Range:"; other vendor formats may require tuning.
   - Clear caches and re‑run:
     - Windows: `del data\extracted.json data\normalized.json`
