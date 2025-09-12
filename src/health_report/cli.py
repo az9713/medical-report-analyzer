@@ -16,6 +16,10 @@ def main():
     parser.add_argument("--out-dir", default=None, help="Output directory for HTML report")
     parser.add_argument("--data-dir", default=None, help="Data dir for caches")
     parser.add_argument("--units", default=None, choices=["auto", "canonical", "original"], help="Units handling mode")
+    parser.add_argument("--enable-ocr", action="store_true", help="Enable OCR for scanned PDFs")
+    parser.add_argument("--ocr-mode", choices=["auto", "always", "never"], default=None, help="When to apply OCR")
+    parser.add_argument("--ocr-dpi", type=int, default=None, help="Rendering DPI for OCR")
+    parser.add_argument("--ocr-langs", default=None, help="Tesseract language codes")
     args = parser.parse_args()
 
     cfg = load_config()
@@ -27,6 +31,14 @@ def main():
         cfg["data_dir"] = args.data_dir
     if args.units:
         cfg["units_preference"] = args.units
+    if args.enable_ocr:
+        cfg.setdefault("ocr", {})["enabled"] = True
+    if args.ocr_mode:
+        cfg.setdefault("ocr", {})["mode"] = args.ocr_mode
+    if args.ocr_dpi is not None:
+        cfg.setdefault("ocr", {})["dpi"] = args.ocr_dpi
+    if args.ocr_langs:
+        cfg.setdefault("ocr", {})["languages"] = args.ocr_langs
 
     reports_dir = Path(cfg["reports_dir"]).resolve()
     out_dir = Path(cfg["out_dir"]).resolve()

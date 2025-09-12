@@ -12,7 +12,6 @@ from ..utils.ocr import ocr_page, DEFAULT_OCR_DPI, DEFAULT_OCR_LANGS
 
 
 EXTRACT_CACHE = "extracted.json"
-MIN_TEXT_LEN_FOR_OCR = 20
 
 
 def extract_from_reports(reports_dir: Path, data_dir: Path, cache: bool = True, ocr: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
@@ -54,14 +53,29 @@ def extract_from_pdf(pdf_path: Path, ocr: Optional[Dict[str, Any]] = None) -> Li
 
                 # 2) Also parse raw text lines to catch non-table content
                 text = page.extract_text() or ""
-                # If OCR is enabled and text is very short, attempt OCR
-                if (not text or len(text) < MIN_TEXT_LEN_FOR_OCR) and ocr and ocr.get("enabled"):
-                    dpi = int(ocr.get("dpi", DEFAULT_OCR_DPI))
-                    langs = ocr.get("languages", DEFAULT_OCR_LANGS)
-                    logging.debug("Attempting OCR for %s page %s (dpi=%s, langs=%s)", pdf_path.name, pi, dpi, langs)
-                    text_ocr = ocr_page(pdf_path, pi, dpi=dpi, languages=langs)
-                    if text_ocr:
-                        text = text_ocr
+                if ocr and ocr.get("enabled"):
+                    mode = str(ocr.get("mode", "auto")).lower()
+                    need_ocr = mode == "always" or (mode == "auto" and not text)
+                    if need_ocr:
+                        dpi = int(ocr.get("dpi", DEFAULT_OCR_DPI))
+                        langs = ocr.get("languages", DEFAULT_OCR_LANGS)
+                        t_cmd = ocr.get("tesseract_cmd")
+                        logging.debug(
+                            "Attempting OCR for %s page %s (dpi=%s, langs=%s)",
+                            pdf_path.name,
+                            pi,
+                            dpi,
+                            langs,
+                        )
+                        text_ocr = ocr_page(
+                            pdf_path,
+                            pi,
+                            dpi=dpi,
+                            languages=langs,
+                            tesseract_cmd=t_cmd,
+                        )
+                        if text_ocr:
+                            text = f"{text}\n{text_ocr}".strip()
                 for rec in _parse_result_lines([ln.strip() for ln in text.splitlines() if ln.strip()], pdf_path):
                     key = (rec["file"], rec["test_name"].lower(), rec.get("value_raw", ""))
                     if key not in seen:

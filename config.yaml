@@ -8,6 +8,9 @@ privacy:
   relative_dates: false
 ocr:
   enabled: false
+  mode: auto  # auto | always | never
+  dpi: 200
+  languages: eng
 parsing:
   cache: true
   parallel_workers: 4

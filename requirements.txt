@@ -7,3 +7,5 @@ PyYAML==6.0.2
 python-dateutil==2.9.0.post0
 scipy==1.13.1
 beautifulsoup4==4.12.3
+pypdfium2==4.30.0
+pytesseract==0.3.10
