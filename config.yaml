@@ -21,3 +21,6 @@ analytics:
 report:
   title: "Health Report Dashboard"
   favorites: ["A1C", "LDL_C", "EGFR", "TSH", "GLUCOSE"]
+export:
+  formats: []  # e.g., ["csv", "json"]
+  out_dir: build/exports

@@ -8,6 +8,7 @@ from .normalize.normalize import normalize_measurements
 from .analyze.trends import compute_trends
 from .analyze.scoring import compute_scores
 from .report.generator import generate_report
+from .exporter import export_data
 
 
 def main():
@@ -20,6 +21,12 @@ def main():
     parser.add_argument("--ocr-mode", choices=["auto", "always", "never"], default=None, help="When to apply OCR")
     parser.add_argument("--ocr-dpi", type=int, default=None, help="Rendering DPI for OCR")
     parser.add_argument("--ocr-langs", default=None, help="Tesseract language codes")
+    parser.add_argument(
+        "--export-formats",
+        default=None,
+        help="Comma-separated export formats (csv,json)",
+    )
+    parser.add_argument("--export-dir", default=None, help="Directory for exported data")
     args = parser.parse_args()
 
     cfg = load_config()
@@ -39,6 +46,12 @@ def main():
         cfg.setdefault("ocr", {})["dpi"] = args.ocr_dpi
     if args.ocr_langs:
         cfg.setdefault("ocr", {})["languages"] = args.ocr_langs
+    if args.export_formats:
+        cfg.setdefault("export", {})["formats"] = [
+            f.strip() for f in args.export_formats.split(",") if f.strip()
+        ]
+    if args.export_dir:
+        cfg.setdefault("export", {})["out_dir"] = args.export_dir
 
     reports_dir = Path(cfg["reports_dir"]).resolve()
     out_dir = Path(cfg["out_dir"]).resolve()
@@ -52,8 +65,19 @@ def main():
         ocr=cfg.get("ocr", {}),
     )
     normalized = normalize_measurements(extracted, data_dir, units_preference=cfg.get("units_preference", "auto"))
-    trends = compute_trends(normalized, rolling_window_days=cfg.get("analytics", {}).get("rolling_window_days", 120))
+    trends = compute_trends(
+        normalized,
+        rolling_window_days=cfg.get("analytics", {}).get("rolling_window_days", 120),
+        trend_min_points=cfg.get("analytics", {}).get("trend_min_points", 3),
+        volatility_window=cfg.get("analytics", {}).get("volatility_window", 5),
+    )
     scored = compute_scores(trends)
+
+    export_cfg = cfg.get("export", {})
+    formats = export_cfg.get("formats", [])
+    if formats:
+        export_dir = Path(export_cfg.get("out_dir", out_dir))
+        export_data(scored, export_dir, formats)
 
     generate_report(
         normalized=normalized,
