@@ -69,5 +69,41 @@
       </tbody>
     </table>
   </div>
+
+  <h3 style="margin-top:20px;">Semiannual Reviews</h3>
+  <div class="grid">
+    {% for review in reviews %}
+      <div class="tile">
+        <div class="label">{{ review.label }}</div>
+        <div class="muted">{{ review.range }}</div>
+        <p>{{ review.summary }}</p>
+        <ul class="muted">
+          <li>Measurements: {{ review.metrics.measurements }}</li>
+          <li>Unique tests: {{ review.metrics.unique_tests }}</li>
+          <li>
+            High: {{ review.metrics.status.high }} ·
+            Low: {{ review.metrics.status.low }} ·
+            In range: {{ review.metrics.status.in_range }}
+            {% if review.metrics.status.unknown %}
+              · Unknown: {{ review.metrics.status.unknown }}
+            {% endif %}
+          </li>
+        </ul>
+        {% if review.highlights %}
+          <div class="muted" style="margin-top:10px;">Highlights</div>
+          <ul>
+            {% for item in review.highlights %}
+              <li>
+                <span class="{{ 'status-bad' if item.status=='high' else ('status-warn' if item.status=='low' else 'muted') }}">{{ item.emoji }}</span>
+                {{ item.description }}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="muted" style="margin-top:10px;">No notable highlights for this period.</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
 {% endblock %}
 
