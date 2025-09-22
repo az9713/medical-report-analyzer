@@ -1,10 +1,8 @@
 import csv
 import json
 from pathlib import Path
-import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from src.health_report.exporter import export_data
+from health_report.exporter import export_data
 
 
 def test_export_csv_and_json(tmp_path: Path):

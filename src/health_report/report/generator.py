@@ -6,6 +6,8 @@ from collections import defaultdict
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import json
 
+from .semiannual import build_semi_annual_reviews
+
 
 def generate_report(*, normalized: List[Dict[str, Any]], trends: List[Dict[str, Any]], scored: List[Dict[str, Any]], out_dir: Path, title: str, favorites: list[str]):
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -38,12 +40,15 @@ def generate_report(*, normalized: List[Dict[str, Any]], trends: List[Dict[str, 
 
     # Overview
     index_tpl = env.get_template("index.html")
+    reviews = build_semi_annual_reviews(normalized)
+
     index_html = index_tpl.render(
         title=title,
         favorites=favorites,
         latest=latest_by_code,
         categories=by_category,
         data_json=json.dumps(scored),
+        reviews=reviews,
     )
     (out_dir / "index.html").write_text(index_html, encoding="utf-8")
 

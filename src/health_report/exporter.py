@@ -22,7 +22,7 @@ def export_data(data: List[Dict[str, Any]], out_dir: Path, formats: Iterable[str
         write_json(out_dir / "results.json", data)
 
     if "csv" in fmt_set and data:
-        fieldnames = sorted(data[0].keys())
+        fieldnames = sorted({k for row in data for k in row.keys()})
         with (out_dir / "results.csv").open("w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()

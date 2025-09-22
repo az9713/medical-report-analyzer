@@ -27,21 +27,18 @@ def compute_trends(
 
     trends: List[Dict[str, Any]] = []
     for code, rows in by_code.items():
-        # Sort by measurement date
-        rows_sorted = sorted(rows, key=lambda r: r["measured_at"])  # ISO date str
-        latest_dt = datetime.fromisoformat(rows_sorted[-1]["measured_at"])
-        window_start = latest_dt - timedelta(days=rolling_window_days)
-        windowed = [
-            r
-            for r in rows_sorted
-            if datetime.fromisoformat(r["measured_at"]) >= window_start
-        ]
+        rows_with_dt = [{**r, "_dt": datetime.fromisoformat(r["measured_at"])} for r in rows]
+        rows_sorted = sorted(rows_with_dt, key=lambda r: r["_dt"])
+
+        latest_row = rows_sorted[-1]
+        window_start = latest_row["_dt"] - timedelta(days=rolling_window_days)
+        windowed = [r for r in rows_sorted if r["_dt"] >= window_start]
 
         if len(windowed) < trend_min_points:
             direction = "stable"
             slope = 0.0
         else:
-            xs = [datetime.fromisoformat(r["measured_at"]).toordinal() for r in windowed]
+            xs = [r["_dt"].toordinal() for r in windowed]
             ys = [r["value"] for r in windowed]
             n = len(xs)
             sum_x = sum(xs)
@@ -60,8 +57,16 @@ def compute_trends(
         last_vals = [r["value"] for r in windowed[-volatility_window:]]
         volatility = _std(last_vals) if len(last_vals) >= 2 else 0.0
 
-        for r in windowed:
-            trends.append({**r, "trend": direction, "volatility": volatility, "slope": slope})
+        latest_out = dict(latest_row)
+        del latest_out["_dt"]
+        trends.append(
+            {
+                **latest_out,
+                "trend": direction,
+                "volatility": volatility,
+                "slope": slope,
+            }
+        )
 
     return trends
 
