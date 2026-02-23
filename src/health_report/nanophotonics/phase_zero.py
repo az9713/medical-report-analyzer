@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, UTC
 import hashlib
 import math
+from pathlib import Path
 
 
 @dataclass(slots=True)
@@ -88,3 +89,45 @@ def run_phase_zero(spec: PhaseZeroSpec, *, sample_points: int = 64) -> dict:
         "profile": profile,
         "signature": sign_clocking_report(summary),
     }
+
+
+def _extract_yaml_seed_block(report_text: str) -> dict[str, float | int]:
+    in_block = False
+    seed_block = False
+    seed: dict[str, float | int] = {}
+    for raw in report_text.splitlines():
+        line = raw.rstrip()
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_block = not in_block
+            if not in_block:
+                seed_block = False
+            continue
+        if not in_block:
+            continue
+        if stripped.startswith("seed:"):
+            seed_block = True
+            continue
+        if stripped.startswith("deliverables:"):
+            seed_block = False
+            continue
+        if seed_block and ":" in stripped and not stripped.startswith("-"):
+            key, value = [x.strip() for x in stripped.split(":", 1)]
+            if value.lower() in {"true", "false"}:
+                seed[key] = value.lower() == "true"
+            else:
+                num = float(value)
+                seed[key] = int(num) if num.is_integer() else num
+    if not seed:
+        raise ValueError("No phase-0 seed block found in report")
+    return seed
+
+
+def run_phase_zero_from_report(report_path: str) -> dict:
+    """Load phase-0 settings from REPORT_INVERSE_DESIGN_CLOAKING.md and execute."""
+
+    text = Path(report_path).read_text(encoding="utf-8")
+    seed = _extract_yaml_seed_block(text)
+    sample_points = int(seed.pop("sample_points", 64))
+    spec = PhaseZeroSpec(**seed)
+    return run_phase_zero(spec, sample_points=sample_points)

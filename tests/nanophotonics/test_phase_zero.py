@@ -3,7 +3,11 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from src.health_report.nanophotonics.phase_zero import PhaseZeroSpec, run_phase_zero
+from src.health_report.nanophotonics.phase_zero import (
+    PhaseZeroSpec,
+    run_phase_zero,
+    run_phase_zero_from_report,
+)
 
 
 def test_run_phase_zero_structure():
@@ -23,3 +27,10 @@ def test_run_phase_zero_validation():
         assert "duty_cycle" in str(exc)
     else:
         raise AssertionError("Expected ValueError for invalid duty_cycle")
+
+
+def test_run_phase_zero_from_report():
+    out = run_phase_zero_from_report("REPORT_INVERSE_DESIGN_CLOAKING.md")
+    assert out["phase"] == "zero"
+    assert len(out["profile"]) == 64
+    assert out["spec"]["period_nm"] == 620.0
